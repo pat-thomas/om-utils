@@ -60,6 +60,12 @@
 
 (defmacro defcomponent
   [component-name & body]
-  `(defn ~component-name
-     [~'data ~'owner ~'opts]
-     ~(body->valid-reify-expr component-name body)))
+  (if (string? (first body))
+    (let [[docstring & fn-body] body]
+      `(defn ~component-name
+         ~docstring
+         [~'data ~'owner ~'opts]
+         ~(body->valid-reify-expr component-name fn-body)))
+    `(defn ~component-name
+       [~'data ~'owner ~'opts]
+       ~(body->valid-reify-expr component-name body))))
