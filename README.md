@@ -5,6 +5,7 @@ Currently, this library only contains one macro, defcomponent, which is intended
 ####Example:
 ```clj
 (defcomponent my-component
+  "Docstring for component."
   (render
     (dom/div
       #js {:id "my-component"}
@@ -14,6 +15,7 @@ Currently, this library only contains one macro, defcomponent, which is intended
 macroexpands to:
 ```clj
 (defn my-component
+  "Docstring for component."
   [data owner opts]
   (reify
     om.core/IDisplayName
@@ -31,5 +33,5 @@ macroexpands to:
 ## Installation
 Add the following to your project.clj:
 ```clj
-[om-utils "0.1.0"]
+[om-utils "0.2.0"]
 ```
