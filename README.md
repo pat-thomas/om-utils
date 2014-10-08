@@ -24,7 +24,7 @@ macroexpands to:
     
     om.core/IRender
     (render [this]
-      (dom/div
+      (om.dom/div
         #js {:id "my-component"}
         (str (:something data)
              (:something-else opts))))))
