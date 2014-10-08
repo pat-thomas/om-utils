@@ -1,4 +1,5 @@
-(ns om-utils.core)
+(ns om-utils.core
+  (:require [clojure.walk :as walk]))
 
 (def lookup-table
   {'did-mount          {:lifecycle-method 'om.core/IDidMount
@@ -58,6 +59,147 @@
     `(reify
        ~@reify-body)))
 
+(def dom-fn-replacement-map
+  (reduce (fn [acc dom-fn]
+            (assoc acc dom-fn (symbol (str 'om.dom "/" dom-fn))))
+          {}
+          '[a
+            abbr
+            address
+            area
+            article
+            aside
+            audio
+            b
+            base
+            bdi
+            bdo
+            big
+            blockquote
+            body
+            br
+            button
+            canvas
+            caption
+            cite
+            code
+            col
+            colgroup
+            data
+            datalist
+            dd
+            del
+            dfn
+            div
+            dl
+            dt
+            em
+            embed
+            fieldset
+            figcaption
+            figure
+            footer
+            form
+            h1
+            h2
+            h3
+            h4
+            h5
+            h6
+            head
+            header
+            hr
+            html
+            i
+            iframe
+            img
+            ins
+            kbd
+            keygen
+            label
+            legend
+            li
+            link
+            main
+            map
+            mark
+            marquee
+            menu
+            menuitem
+            meta
+            meter
+            nav
+            noscript
+            object
+            ol
+            optgroup
+            output
+            p
+            param
+            pre
+            progress
+            q
+            rp
+            rt
+            ruby
+            s
+            samp
+            script
+            section
+            select
+            small
+            source
+            span
+            strong
+            style
+            sub
+            summary
+            sup
+            table
+            tbody
+            td
+            tfoot
+            th
+            thead
+            time
+            title
+            tr
+            track
+            u
+            ul
+            var
+            video
+            wbr
+            
+            ;; svg
+            circle
+            ellipse
+            g
+            line
+            path
+            polyline
+            rect
+            svg
+            text
+            defs
+            linearGradient
+            polygon
+            radialGradient
+            stop
+            tspan]))
+
+(defn autogen-dom-fns
+  [fn-body]
+  (let [render-methods (filter (fn [expr]
+                                 (or (= (first expr) 'render)
+                                     (= (first expr) 'render-state)))
+                               fn-body)]
+    (walk/postwalk-replace dom-fn-replacement-map render-methods)))
+
+(defn process-body
+  [component-name body]
+  (body->valid-reify-expr component-name (autogen-dom-fns body)))
+
 (defmacro defcomponent
   [component-name & body]
   (if (string? (first body))
@@ -65,7 +207,7 @@
       `(defn ~component-name
          ~docstring
          [~'data ~'owner ~'opts]
-         ~(body->valid-reify-expr component-name fn-body)))
+         ~(process-body component-name fn-body)))
     `(defn ~component-name
        [~'data ~'owner ~'opts]
-       ~(body->valid-reify-expr component-name body))))
+       ~(process-body component-name body))))
