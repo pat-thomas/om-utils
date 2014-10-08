@@ -7,7 +7,7 @@ Currently, this library only contains one macro, defcomponent, which is intended
 (defcomponent my-component
   "Docstring for component."
   (render
-    (dom/div
+    (div
       #js {:id "my-component"}
       (str (:something data)
            (:something-else opts)))))
