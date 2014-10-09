@@ -1,6 +1,7 @@
 (ns om-utils.core
-  (:require [om-utils.data :as data]
-            [clojure.walk  :as walk]))
+  (:require [om-utils.data  :as data]
+            [clojure.walk   :as walk]
+            [clojure.string :as string]))
 
 (defn split-by
   [pred s]
@@ -9,10 +10,9 @@
 
 (defn make-friendly-display-name
   [component-name]
-  (let [capitalize-first-letter (fn [s]
-                                  (apply str (concat (seq (.toUpperCase (.substring s 0 1)))
-                                                     (rest s))))]
-    (apply str (interpose " " (map capitalize-first-letter (clojure.string/split (str component-name) #"-"))))))
+  (->> (-> component-name str (string/split #"-"))
+       (map string/capitalize)
+       (string/join " ")))
 
 (defn generate-display-name-method
   [component-name]
