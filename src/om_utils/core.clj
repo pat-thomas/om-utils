@@ -17,9 +17,9 @@
 (defn generate-display-name-method
   [component-name]
   `(om.core/IDisplayName
-    (display-name
-     [this]
-     (or (:react-name opts) ~(make-friendly-display-name component-name)))))
+    (~'display-name
+     ~'[this]
+     (or (:react-name ~'opts) ~(make-friendly-display-name component-name)))))
 
 (defn body->valid-reify-expr
   [component-name body]
@@ -31,15 +31,11 @@
                                        (let [impl-fn-name (first expr)]
                                          (concat (list (first expr) (get-in data/lookup-table [impl-fn-name :arg-list]))
                                                  (rest expr))))
-                                     body)
-        friendly-display-name   (make-friendly-display-name component-name)
-        display-name-method     `(om.core/IDisplayName
-                                  (~'display-name
-                                   ~'[this]
-                                   (or (:react-name ~'opts) ~friendly-display-name)))
-        reify-body              (concat display-name-method (interleave reify-lifecycle-methods body-with-auto-exprs))]
+                                     body)]
     `(reify
-       ~@reify-body)))
+       ~@(concat
+           (generate-display-name-method component-name)
+           (interleave reify-lifecycle-methods body-with-auto-exprs)))))
 
 (defn is-render-method?
   [expr]
