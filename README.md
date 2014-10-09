@@ -1,5 +1,3 @@
-Utilities for working with Om.
-
 ## API docs:
 Currently, this library only contains one macro, defcomponent, which is intended to reduce the verbosity in defining Om components.
 ####Example:
