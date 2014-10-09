@@ -2,6 +2,11 @@
   (:require [om-utils.data :as data]
             [clojure.walk  :as walk]))
 
+(defn split-by
+  [pred s]
+  (let [res (group-by pred s)]
+    (list (get res true) (get res false))))
+
 (defn make-friendly-display-name
   [component-name]
   (let [capitalize-first-letter (fn [s]
@@ -24,7 +29,7 @@
                                      body)
         body-with-auto-exprs    (map (fn [expr]
                                        (let [impl-fn-name (first expr)]
-                                         (concat (list (first expr) (get-in lookup-table [impl-fn-name :arg-list]))
+                                         (concat (list (first expr) (get-in data/lookup-table [impl-fn-name :arg-list]))
                                                  (rest expr))))
                                      body)
         friendly-display-name   (make-friendly-display-name component-name)
@@ -36,17 +41,21 @@
     `(reify
        ~@reify-body)))
 
+(defn is-render-method?
+  [expr]
+  (or (= (first expr) 'render)
+      (= (first expr) 'render-state)))
+
 (defn autogen-dom-fns
   [fn-body]
-  (let [render-methods (filter (fn [expr]
-                                 (or (= (first expr) 'render)
-                                     (= (first expr) 'render-state)))
-                               fn-body)]
-    (walk/postwalk-replace data/dom-fn-replacement-map render-methods)))
+  (let [[render-methods non-render-methods] (split-by is-render-method? fn-body)]
+    (concat (walk/postwalk-replace data/dom-fn-replacement-map render-methods)
+            non-render-methods)))
 
 (defn process-body
   [component-name body]
-  (body->valid-reify-expr component-name (autogen-dom-fns body)))
+  (let [body-with-dom-fns (autogen-dom-fns body)]
+    (body->valid-reify-expr component-name body-with-dom-fns)))
 
 (defmacro defcomponent
   [component-name & body]
