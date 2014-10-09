@@ -33,5 +33,5 @@ macroexpands to:
 ## Installation
 Add the following to your project.clj:
 ```clj
-[om-utils "0.2.0"]
+[om-utils "0.3.0"]
 ```
