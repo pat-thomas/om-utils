@@ -33,9 +33,8 @@
                                                  (rest expr))))
                                      body)]
     `(reify
-       ~@(concat
-           (generate-display-name-method component-name)
-           (interleave reify-lifecycle-methods body-with-auto-exprs)))))
+       ~@(generate-display-name-method component-name)
+       ~@(interleave reify-lifecycle-methods body-with-auto-exprs))))
 
 (defn is-render-method?
   [expr]
