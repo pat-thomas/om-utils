@@ -50,7 +50,6 @@
             code
             col
             colgroup
-            data
             datalist
             dd
             del
