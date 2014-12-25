@@ -36,22 +36,6 @@
        ~@(generate-display-name-method component-name)
        ~@(interleave reify-lifecycle-methods body-with-auto-exprs))))
 
-(defn is-render-method?
-  [expr]
-  (or (= (first expr) 'render)
-      (= (first expr) 'render-state)))
-
-(defn autogen-dom-fns
-  [fn-body]
-  (let [[render-methods non-render-methods] (split-by is-render-method? fn-body)]
-    (concat (walk/postwalk-replace data/dom-fn-replacement-map render-methods)
-            non-render-methods)))
-
-(defn process-body
-  [component-name body]
-  (let [body-with-dom-fns (autogen-dom-fns body)]
-    (body->valid-reify-expr component-name body-with-dom-fns)))
-
 (defmacro defcomponent
   [component-name & body]
   (if (string? (first body))
@@ -59,7 +43,7 @@
       `(defn ~component-name
          ~docstring
          [~'data ~'owner ~'opts]
-         ~(process-body component-name fn-body)))
+         ~(body->valid-reify-expr component-name fn-body)))
     `(defn ~component-name
        [~'data ~'owner ~'opts]
-       ~(process-body component-name body))))
+       ~(body->valid-reify-expr component-name body))))
