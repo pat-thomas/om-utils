@@ -47,9 +47,3 @@
     `(defn ~component-name
        [~'data ~'owner ~'opts]
        ~(body->valid-reify-expr component-name body))))
-
-(defmacro build
-  ([component-name]
-   `(om.core/build ~component-name ~'data))
-  ([component-name opts]
-   `(om.core/build ~component-name ~'data {:opts ~opts})))
