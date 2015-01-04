@@ -38,12 +38,29 @@
 
 (defmacro defcomponent
   [component-name & body]
-  (if (string? (first body))
+  (cond
+    (and (string? (first body))
+         (vector? (second body))) ;; treat (second body) as map destructuring for opts
+    (let [[docstring opts-keys & fn-body] body]
+      `(defn ~component-name
+         ~docstring
+         [~'data ~'owner {:keys ~opts-keys :as ~'opts}]
+         ~(body->valid-reify-expr component-name fn-body)))
+
+    (string? (first body))
     (let [[docstring & fn-body] body]
       `(defn ~component-name
          ~docstring
          [~'data ~'owner ~'opts]
          ~(body->valid-reify-expr component-name fn-body)))
+
+    (vector? (first body)) ;; treat (second body) as map destructuring for opts)
+    (let [[opts-keys & fn-body] body]
+      `(defn ~component-name
+         [~'data ~'owner {:keys ~opts-keys :as ~'opts}]
+         ~(body->valid-reify-expr component-name fn-body)))
+
+    :default
     `(defn ~component-name
        [~'data ~'owner ~'opts]
        ~(body->valid-reify-expr component-name body))))
