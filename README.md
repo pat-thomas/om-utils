@@ -4,6 +4,7 @@ Currently, this library only contains one macro, defcomponent, which is intended
 ```clj
 (defcomponent my-component
   "Docstring for component."
+  [foo bar]
   (render
     (div
       #js {:id "my-component"}
@@ -14,7 +15,7 @@ macroexpands to:
 ```clj
 (defn my-component
   "Docstring for component."
-  [data owner opts]
+  [data owner {:keys [foo bar] :as opts}]
   (reify
     om.core/IDisplayName
     (display-name [this]
