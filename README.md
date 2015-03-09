@@ -1,5 +1,9 @@
+## Rationale:
+om-utils attempts to provide utilities to reduce some of the verbosity
+and complexity inherent in defining and working with Om components.
 ## API docs:
-Currently, this library only contains one macro, defcomponent, which is intended to reduce the verbosity in defining Om components.
+### Defining components:
+####defcomponent
 ####Example:
 ```clj
 (defcomponent my-component
