@@ -33,6 +33,9 @@ macroexpands to:
              (:something-else opts))))))
 ``` 
 
+### Managing application state:
+Coming soon...
+
 ## Installation
 Add the following to your project.clj:
 ```clj
