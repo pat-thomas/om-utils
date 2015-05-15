@@ -10,9 +10,11 @@
 
 (defn make-friendly-display-name
   [component-name]
-  (->> (-> component-name str (string/split #"-"))
-       (map string/capitalize)
-       (string/join " ")))
+  (str *ns*
+       "/"
+       (->> (-> component-name str (string/split #"-"))
+            (map string/capitalize)
+            (string/join " "))))
 
 (defn generate-display-name-method
   [component-name]
